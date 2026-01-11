@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="style.css">
+  <title>Projects | Shubham Kumar</title>
+</head>
+
+<body>
+  <!-- Header outside container for full-width sticky effect -->
+  <header>
+    <div
+      style="width: 100%; max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
+      <div class="nav-path">
+        <a href="index.html">~/</a>
+        <a href="projects.html" class="active-path">projects/</a>
+        <span style="color:var(--surface1)">|</span>
+      </div>
+      <nav>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="#" id="more-btn">More...</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <h2>📂 Projects</h2>
+
+    <div class="project-grid">
+      <!-- 1. Himachaliverse -->
+      <div class="project-item clickable-card" data-link="./project_pages/project-himachaliverse.html">
+        <div class="img-placeholder"><img src="./images/Himachaliverse.jpeg" alt="Himachaliverse" width="100%"
+            height="100%"></div>
+        <h4 class="card-title">Himachaliverse</h4>
+        <p class="card-desc">Mobile application for digitizing local languages with NMT integration (English ->
+          Himachali).</p>
+        <div class="tags"><span class="tag">nlp</span><span class="tag">mobile</span></div>
+      </div>
+
+      <!-- 2. Pen Plotter -->
+      <div class="project-item clickable-card" data-link="./project_pages/project-penplotter.html">
+        <div class="img-placeholder"><img src="./images/CNC Pen Plotter.jpg" alt="CNC Pen Plotter" width="100%"
+            height="100%" style="object-fit: cover;"></div>
+        <h4 class="card-title">CNC Pen Plotter</h4>
+        <p class="card-desc">Hardware-software system to replicate handwriting using CNC mechanics.</p>
+        <div class="tags"><span class="tag">python</span><span class="tag">robotics</span></div>
+      </div>
+
+      <!-- 3. EVM Face Rec -->
+      <div class="project-item clickable-card" data-link="./project_pages/project-evm.html">
+        <div class="img-placeholder"><img src="./images/EVM.jpeg" alt="EVM" width="100%" height="100%"
+            style="object-fit: cover;"></div>
+        <h4 class="card-title">EVM using Face Recognition</h4>
+        <p class="card-desc">Secure voting system using facial recognition authentication.</p>
+        <div class="tags"><span class="tag">opencv</span><span class="tag">arduino</span></div>
+      </div>
+
+      <!-- 4. Cerebellum -->
+      <div class="project-item clickable-card" data-link="./project_pages/project-cerebellum.html">
+        <div class="img-placeholder"><img src="./images/Cerebellum.png" alt="Cerebellum" width="100%" height="100%">
+        </div>
+        <h4 class="card-title">Cerebellum</h4>
+        <p class="card-desc">AI Multiplayer Pictionary-style game with real-time scoring.</p>
+        <div class="tags"><span class="tag">flask</span><span class="tag">websockets</span></div>
+      </div>
+
+      <!-- 5. IIITNR Blogs -->
+      <div class="project-item clickable-card" data-link="./project_pages/project-blogs.html">
+        <div class="img-placeholder"><span style="color:var(--text); opacity:0.5;">[ Image ]</span></div>
+        <h4 class="card-title">IIITNR Blogs</h4>
+        <p class="card-desc">College blog for sharing research and personal experiences.</p>
+        <div class="tags"><span class="tag">vercel</span><span class="tag">flask</span></div>
+      </div>
+    </div>
+
+
+
+    <div class="footer-bar">
+      <span>© 2026 Shubham Kumar</span>
+      <span>Showing 5 of 5 major projects</span>
+    </div>
+  </div>
+
+  <!-- Sidebar Components -->
+  <div class="overlay" id="overlay"></div>
+  <div class="sidebar" id="sidebar">
+    <button class="close-btn" id="close-sidebar">&times;</button>
+    <h2>Menu</h2>
+    <nav>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="projects.html">Projects</a></li>
+        <li><a href="Shubham's Resume_.pdf" target="_blank">Resume</a></li>
+        <li><a href="https://github.com/CosmicShubham1">Github</a></li>
+        <li><a href="https://linkedin.com/in/cosmicshubham">LinkedIn</a></li>
+      </ul>
+    </nav>
+  </div>
+  <script src="script.js"></script>
+</body>
+
+</html>
