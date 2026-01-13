@@ -775,6 +775,7 @@ header nav a:hover {
 }
 
 .sidebar h2 {
+    display: none;
     margin-bottom: 20px;
     color: var(--green);
 }
@@ -1299,11 +1300,22 @@ header nav a:hover {
         flex-direction: column-reverse;
         text-align: center;
         gap: 20px;
+        padding: 0 10px;
+        /* Safety padding */
     }
 
     .about-flex {
         flex-direction: column;
         align-items: center;
+        padding: 0 20px;
+        /* Prevent left clipping */
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .sidebar h2 {
+        display: none !important;
+        /* Hide unnecessary 'Menu' title */
     }
 
     .profile-img {
@@ -1345,6 +1357,236 @@ header nav a:hover {
     }
 
     /* 10. Fix Image Overlap */
+    /* Fix Sidebar Menu Overlap */
+    .sidebar {
+        z-index: 10001 !important;
+        /* Above header */
+        padding-top: 60px !important;
+        /* Push menu down below close button */
+    }
+
+    .sidebar .close-btn {
+        z-index: 10002 !important;
+        /* Ensure readable */
+        top: 20px;
+        right: 20px;
+    }
+
+    /* About Text Safety */
+    .about-flex div {
+        padding: 0 10px;
+        /* Internal text padding */
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .about-flex h1 {
+        margin-left: 10px;
+        /* Align title */
+    }
+
+    /* Ensure container clears fixed header completely */
+    .container {
+        margin-top: 120px !important;
+        padding-bottom: 40px;
+    }
+
+    /* Restore Image Fix */
+    /* Global Flex Reset for Overflow */
+    * {
+        min-width: 0;
+        /* Critical for wrapping */
+    }
+
+    body {
+        padding: 0 15px;
+    }
+
+    /* 2. Safe Fixed Header */
+    header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        padding: 10px 15px;
+        box-sizing: border-box;
+        z-index: 9999;
+        margin: 0;
+        background: rgba(30, 30, 46, 0.95);
+    }
+
+    /* Allow header content to wrap if needed */
+    header>div {
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+        /* Center if wrapped */
+    }
+
+    /* Push overlay down */
+    .container {
+        margin-top: 100px;
+        /* Safe margin for potentially wrapped header */
+        width: 100%;
+        padding: 0;
+        overflow: hidden;
+        /* Hard clip */
+    }
+
+    /* 3. Stack Grids */
+    .widget-grid,
+    .project-grid,
+    .cert-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        width: 100vw;
+        /* Explicit viewport width claim */
+        margin-left: -15px;
+        /* Counteract body padding to full bleed if needed */
+        padding: 0 15px;
+        box-sizing: border-box;
+    }
+
+    .card,
+    .project-item,
+    .cert-card {
+        width: 100% !important;
+        margin: 0 !important;
+        box-sizing: border-box;
+        overflow: hidden;
+    }
+
+    /* 4. Map & Media Safety */
+    .location-card {
+        min-height: 220px;
+    }
+
+    .map-bg,
+    iframe,
+    img,
+    svg {
+        max-width: 100% !important;
+        width: 100%;
+        height: auto;
+    }
+
+    .map-bg {
+        height: 100%;
+        object-fit: cover;
+    }
+
+    /* 5. Commit List Overflow Protection */
+    .commit-item {
+        flex-wrap: nowrap;
+        gap: 10px;
+    }
+
+    .commit-msg {
+        max-width: 40vw;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    /* 6. Layout Stacking */
+    .hero-wrapper {
+        flex-direction: column-reverse;
+        text-align: center;
+        gap: 20px;
+        padding: 0 10px;
+        /* Safety padding */
+    }
+
+    .about-flex {
+        flex-direction: column;
+        align-items: center;
+        padding: 0 20px;
+        /* Prevent left clipping */
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .sidebar h2 {
+        display: none !important;
+        /* Hide unnecessary 'Menu' title */
+    }
+
+    .profile-img {
+        width: 100%;
+        max-width: 320px;
+    }
+
+    /* 7. Navigation */
+    header nav ul {
+        gap: 10px;
+        justify-content: center;
+        flex-wrap: wrap;
+        /* Allow nav items to wrap rows */
+    }
+
+    /* 8. Utils */
+    .hide-on-mobile {
+        display: none !important;
+    }
+
+    .footer-bar {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+        width: 100%;
+    }
+
+    /* 9. Code Block Scrolling */
+    /* 9. Code Block Scrolling */
+    .code-container {
+        width: 100%;
+        display: block;
+        overflow-x: auto;
+    }
+
+    .code-container pre {
+        width: auto;
+        min-width: 100%;
+    }
+
+    /* 10. Fix Image Overlap */
+    /* Fix Sidebar Menu Overlap */
+    .sidebar {
+        z-index: 10001 !important;
+        /* Above header */
+        padding-top: 60px !important;
+        /* Push menu down below close button */
+    }
+
+    .sidebar .close-btn {
+        z-index: 10002 !important;
+        /* Ensure readable */
+        top: 20px;
+        right: 20px;
+    }
+
+    /* About Text Safety */
+    .about-flex div {
+        padding: 0 10px;
+        /* Internal text padding */
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .about-flex h1 {
+        margin-left: 10px;
+        /* Align title */
+    }
+
+    /* Ensure container clears fixed header completely */
+    .container {
+        margin-top: 120px !important;
+        padding-bottom: 40px;
+    }
+
+    /* Restore Image Fix */
     .img-placeholder {
         height: auto !important;
         min-height: 140px;
@@ -1354,6 +1596,13 @@ header nav a:hover {
     .img-placeholder img {
         height: auto !important;
         position: static !important;
-        /* Ensure it flows normally */
+    }
+
+    /* Fix Project Meta Wrapping on Mobile */
+    .meta-row {
+        flex-wrap: wrap;
+        /* Allow wrapping */
+        gap: 10px;
+        /* Smaller gap on mobile */
     }
 }
