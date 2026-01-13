@@ -40,13 +40,14 @@
                     </div>
                     <div class="window-header"><span>pen-plotter</span><span>Hardware</span></div>
                     <p style="font-size: 0.9rem; color: var(--subtext0); padding: 20px 0;">
-                        Complex hardware-software system to replicate handwriting using CNC mechanics.
+                        A low-cost, open-source automated writing machine utilizing Arduino and G-code for precision
+                        vector plotting.
                     </p>
                 </div>
             </div>
         </div>
 
-        <h1 style="font-size: 2.5rem; margin-bottom: 20px; color:var(--green);">Automated Pen Plotter</h1>
+        <h1 style="font-size: 2.5rem; margin-bottom: 20px; color:var(--green);">CNC Pen Plotter</h1>
 
         <div class="meta-row">
             <div class="meta-item">
@@ -63,6 +64,13 @@
                 </svg>
                 <a href="https://github.com/CosmicShubham1/pen-plotter" class="meta-link" target="_blank">Repository</a>
             </div>
+            <div class="meta-item">
+                <svg viewBox="0 0 24 24">
+                    <path
+                        d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                </svg>
+                <span>Team: <a href="https://github.com/ItsMat78" target="_blank">Shreyash Rai</a></span>
+            </div>
         </div>
 
         <div class="project-tags">
@@ -72,13 +80,86 @@
         </div>
 
         <div class="project-content-body">
-            <h3>Project Details</h3>
+            <h3>Overview</h3>
             <p>
-                Built a complex hardware-software system to replicate handwriting. Developed Python algorithms to
-                convert vector graphics into coordinate-based G-code for precise motor control.
-                <br><br>
-                [ Detailed documentation about the motors, drivers, and Python control scripts will go here. ]
+                The <strong>CNC Pen Plotter</strong> is a compact, 3-axis automated machining system designed to
+                replicate digital vector graphics and handwriting onto physical surfaces. While traditional CNC systems
+                are often complex and expensive, this project engineers a cost-effective solution using accessible
+                open-source hardware.
             </p>
+            <p>
+                The system bridges the gap between digital design and physical prototyping. By interpreting G-code
+                commands, it coordinates NEMA 17 stepper motors to execute precise pen movements, making it an ideal
+                tool for PCB layout drawing, educational robotics, and automated technical sketching.
+            </p>
+
+            <h3>Key Features</h3>
+            <ul>
+                <li><strong>3-Axis Precision Control:</strong> Orchestrates synchronized movement across X, Y, and Z
+                    axes for accurate 2D plotting and pen actuation.</li>
+                <li><strong>G-Code Interpretation:</strong> Native support for standard G-code instructions generated
+                    from vector software like Inkscape.</li>
+                <li><strong>Modular Architecture:</strong> Features a fully 3D-printed mechanical frame, allowing for
+                    easy customization, repair, and assembly.</li>
+                <li><strong>Automated Z-Axis:</strong> Utilizes an MG90S servo motor for precise "pen-up/pen-down"
+                    operations to create clean, discontinuous lines.</li>
+                <li><strong>Versatile Tooling:</strong> While optimized for pens, the carriage design is adaptable for
+                    laser modules or engravers for varied manufacturing tasks.</li>
+            </ul>
+
+            <h3>Architecture & Hardware Stack</h3>
+            <p>The system follows a standard CNC control loop, processing digital signals into mechanical motion.</p>
+            <ul>
+                <li><strong>Controller:</strong> Arduino Uno R3 running GRBL firmware serves as the central brain,
+                    interpreting serial data and calculating motor timing.</li>
+                <li><strong>Drive System:</strong> CNC Shield V3 populated with DRV8825 drivers regulates high-current
+                    power to the motors, ensuring thermal protection and smooth micro-stepping.</li>
+                <li><strong>Actuators:</strong>
+                    <ul>
+                        <li>X & Y Axes: NEMA 17 Stepper Motors provide high-torque positioning for the gantry.</li>
+                        <li>Z Axis: MG90S Servo handles the tool-head lift mechanism.</li>
+                    </ul>
+                </li>
+                <li><strong>Software Interface:</strong> Universal G-Code Sender (UGS) streams commands from the host
+                    computer via USB.</li>
+            </ul>
+
+            <h3>How It Works</h3>
+            <ol>
+                <li><strong>Vector Design:</strong> A design (e.g., a PCB trace or logo) is created in software like
+                    Inkscape and converted into G-code coordinates.</li>
+                <li><strong>Command Transmission:</strong> The G-code file is loaded into Universal G-Code Sender, which
+                    streams data to the Arduino via a COM port.</li>
+                <li><strong>Execution:</strong> The Arduino parses the coordinates (e.g., <code>G01 X10 Y20</code>) and
+                    directs the stepper drivers to move the axes by specific step counts.</li>
+                <li><strong>Plotting:</strong> The machine physically draws the path, lifting the pen (Z-axis) when
+                    moving between non-connected lines.</li>
+            </ol>
+
+            <h3>Real-World Applications</h3>
+            <ul>
+                <li><strong>PCB Prototyping:</strong> Drawing circuit layouts directly onto copper clad boards for
+                    etching.</li>
+                <li><strong>Automated Documentation:</strong> Replicating handwritten notes or signatures at scale.</li>
+                <li><strong>STEM Education:</strong> Demonstrating principles of mechatronics, coordinate geometry, and
+                    digital fabrication.</li>
+            </ul>
+
+            <h3>Sample G-Code Workflow</h3>
+            <div class="code-container">
+                <button class="copy-btn">Copy</button>
+                <pre><code class="language-gcode">; Example G-Code executed by the plotter
+G21        ; Set units to millimeters
+G90        ; Absolute positioning
+G01 Z5.0   ; Lift pen (Servo Up)
+G00 X0 Y0  ; Move to origin
+
+; Start drawing a line
+G00 X10 Y10 ; Move to start point
+G01 Z0.0    ; Lower pen (Servo Down)
+G01 X50 Y50 ; Draw line to (50, 50)
+G01 Z5.0    ; Lift pen</code></pre>
+            </div>
         </div>
 
         <div class="footer-bar">
