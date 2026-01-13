@@ -133,72 +133,38 @@ document.addEventListener('DOMContentLoaded', () => {
     const commitList = document.querySelector('.commit-list');
     if (commitList) {
         const username = 'CosmicShubham1';
-        fetch(`https://api.github.com/users/${username}/events/public`)
-            .then(response => {
-                if (!response.ok) throw new Error(`Events fetch failed: ${response.status}`);
-                return response.json();
-            })
-            .then(events => {
-                if (!Array.isArray(events) || events.length === 0) {
-                    throw new Error('No events found');
-                }
 
-                // Find the most recent particular PushEvent to identify active repo
-                const pushEvent = events.find(event => event.type === 'PushEvent');
 
-                if (!pushEvent) {
-                    commitList.innerHTML = '<li class="commit-item" style="border:none;">No push events found recently.</li>';
-                    return;
-                }
+        const renderCommits = (commits) => {
+            if (!commits || !Array.isArray(commits)) return;
 
-                const repoName = pushEvent.repo.name;
-                // Now fetch commits from this specific repo
-                return fetch(`https://api.github.com/repos/${repoName}/commits?per_page=3`);
-            })
-            .then(response => {
-                if (!response) return;
-                if (!response.ok) throw new Error(`Commits fetch failed: ${response.status}`);
-                return response.json();
-            })
-            .then(commits => {
-                if (!commits || !Array.isArray(commits)) return;
+            const detailPromises = commits.map(item => {
+                return fetch(item.url)
+                    .then(res => {
+                        if (!res.ok) throw new Error('Detail fetch failed');
+                        return res.json();
+                    })
+                    .then(details => ({
+                        message: item.commit.message,
+                        html_url: item.html_url,
+                        date: item.commit.author.date,
+                        stats: details.stats,
+                    }))
+                    .catch(() => ({
+                        message: item.commit.message,
+                        html_url: item.html_url,
+                        date: item.commit.author.date,
+                        stats: null
+                    }));
+            });
 
-                // We need to fetch individual commit details to get the "stats" (additions/deletions)
-                // and we also want to format the date.
-                const detailPromises = commits.map(item => {
-                    return fetch(item.url)
-                        .then(res => {
-                            if (!res.ok) throw new Error('Detail fetch failed');
-                            return res.json();
-                        })
-                        .then(details => ({
-                            message: item.commit.message,
-                            html_url: item.html_url,
-                            date: item.commit.author.date,
-                            stats: details.stats, // { total, additions, deletions }
-                            repoUrl: item.html_url // fallback to commit url for repo inference
-                        }))
-                        .catch(() => ({
-                            message: item.commit.message,
-                            html_url: item.html_url,
-                            date: item.commit.author.date,
-                            stats: null
-                        }));
-                });
-
-                return Promise.all(detailPromises);
-            })
-            .then(detailedCommits => {
-                if (!detailedCommits) return;
-
+            Promise.all(detailPromises).then(detailedCommits => {
                 commitList.innerHTML = '';
 
-                // Time formatter
                 const timeAgo = (dateString) => {
                     const date = new Date(dateString);
                     const now = new Date();
                     const seconds = Math.floor((now - date) / 1000);
-
                     let interval = seconds / 31536000;
                     if (interval > 1) return Math.floor(interval) + "y ago";
                     interval = seconds / 2592000;
@@ -219,68 +185,84 @@ document.addEventListener('DOMContentLoaded', () => {
                         li.style.borderBottom = 'none';
                     }
 
-                    // Repo Name Inference
-                    let displayRepo = 'Repo';
-                    try {
-                        const urlParts = commit.html_url.split('/');
-                        displayRepo = urlParts[4];
-                    } catch (e) { }
-
-                    // Message
                     const msgSpan = document.createElement('span');
                     msgSpan.className = 'commit-msg';
-                    msgSpan.textContent = commit.message.split('\n')[0]; // First line
+                    msgSpan.textContent = commit.message.split('\n')[0];
                     msgSpan.title = commit.message;
 
-                    // Meta Container
                     const metaSpan = document.createElement('span');
                     metaSpan.className = 'commit-meta';
                     metaSpan.style.display = 'flex';
                     metaSpan.style.gap = '10px';
                     metaSpan.style.alignItems = 'center';
 
-                    // Time
                     const timeSpan = document.createElement('span');
                     timeSpan.textContent = timeAgo(commit.date);
                     timeSpan.style.color = 'var(--subtext0)';
                     timeSpan.style.fontSize = '0.75rem';
 
-                    // Stats
                     const statsSpan = document.createElement('span');
                     if (commit.stats) {
-                        const total = commit.stats.total;
-                        statsSpan.textContent = `+${commit.stats.additions + commit.stats.deletions}`;
-                        // Or exactly matches mock: +305 (could be additions only? usually total changes)
-                        // Let's use total for impact.
-                        // Color coding
                         if (commit.stats.additions > commit.stats.deletions) {
-                            statsSpan.style.color = '#a6e3a1'; // Green
+                            statsSpan.style.color = '#a6e3a1';
                             statsSpan.textContent = `+${commit.stats.additions}`;
                         } else {
-                            statsSpan.style.color = '#f38ba8'; // Red
+                            statsSpan.style.color = '#f38ba8';
                             statsSpan.textContent = `-${commit.stats.deletions}`;
                         }
-                    } else {
-                        statsSpan.textContent = '';
                     }
 
                     metaSpan.appendChild(timeSpan);
                     metaSpan.appendChild(statsSpan);
-
                     li.style.cursor = 'pointer';
                     li.onclick = () => window.open(commit.html_url, '_blank');
-
                     li.appendChild(msgSpan);
                     li.appendChild(metaSpan);
                     commitList.appendChild(li);
                 });
+            });
+        };
+
+        // Strategy: Try Events API -> Fallback to Repos API (sorted by updated)
+        fetch(`https://api.github.com/users/${username}/events/public`)
+            .then(res => {
+                if (!res.ok) throw new Error('Events fetch failed');
+                return res.json();
             })
+            .then(events => {
+                const pushEvent = events.find(event => event.type === 'PushEvent');
+                if (pushEvent) {
+                    return fetch(`https://api.github.com/repos/${pushEvent.repo.name}/commits?per_page=3`)
+                        .then(res => res.json());
+                } else {
+                    // Fallback to most recently updated repo
+                    return fetch(`https://api.github.com/users/${username}/repos?sort=updated&per_page=1`)
+                        .then(res => res.json())
+                        .then(repos => {
+                            if (!repos || repos.length === 0) throw new Error('No repos found');
+                            return fetch(`https://api.github.com/repos/${repos[0].full_name}/commits?per_page=3`)
+                                .then(res => res.json());
+                        });
+                }
+            })
+            .then(commits => renderCommits(commits))
             .catch(e => {
-                console.error('Failed to fetch/parse GitHub data:', e);
-                commitList.innerHTML = `
-                    <li class="commit-item" style="border:none;">
-                        <span class="commit-msg" style="color: var(--red);">Unable to load activity.</span>
-                    </li>`;
+                console.error('GitHub Activity Error:', e);
+                // Last ditch effort: Try fetching repos direct if events failed hard
+                fetch(`https://api.github.com/users/${username}/repos?sort=updated&per_page=1`)
+                    .then(res => res.json())
+                    .then(repos => {
+                        if (!repos || repos.length === 0) throw new Error('No repos');
+                        return fetch(`https://api.github.com/repos/${repos[0].full_name}/commits?per_page=3`)
+                            .then(res => res.json());
+                    })
+                    .then(commits => renderCommits(commits))
+                    .catch(err => {
+                        commitList.innerHTML = `
+                        <li class="commit-item" style="border:none;">
+                            <span class="commit-msg" style="color: var(--subtext0);">Activity hidden (API Limit).</span>
+                        </li>`;
+                    });
             });
 
         // Fetch Total Commits Count (approximate via Search API)
