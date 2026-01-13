@@ -109,4 +109,24 @@ document.addEventListener('DOMContentLoaded', () => {
     setInterval(updateTime, 1000);
     updateTime(); // init
 
+    // 6. Copy Code Functionality
+    const copyBtns = document.querySelectorAll('.copy-btn');
+    copyBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const codeBlock = btn.nextElementSibling.querySelector('code');
+            if (codeBlock) {
+                const text = codeBlock.innerText; // Use innerText to preserve formatting
+                navigator.clipboard.writeText(text).then(() => {
+                    const originalText = btn.textContent;
+                    btn.textContent = 'Copied!';
+                    setTimeout(() => {
+                        btn.textContent = originalText;
+                    }, 2000);
+                }).catch(err => {
+                    console.error('Failed to copy: ', err);
+                });
+            }
+        });
+    });
+
 });

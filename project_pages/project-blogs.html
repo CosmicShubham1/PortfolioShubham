@@ -41,7 +41,7 @@
                     </div>
                     <div class="window-header"><span>IIITNR Blogs</span><span>Blog</span></div>
                     <p style="font-size: 0.9rem; color: var(--subtext0); padding: 20px 0;">
-                        College blog for sharing research and personal experiences.
+                        A full-stack Content Management System (CMS) backed by distributed SQL cloud infrastructure.
                     </p>
                 </div>
             </div>
@@ -68,18 +68,96 @@
         </div>
 
         <div class="project-tags">
-            <span class="tag-pill">opencv</span>
-            <span class="tag-pill">arduino</span>
-            <span class="tag-pill">python</span>
+            <span class="tag-pill">flask</span>
+            <span class="tag-pill">tidb-cloud</span>
+            <span class="tag-pill">cms</span>
         </div>
 
         <div class="project-content-body">
-            <h3>Project Details</h3>
-            <p>
-                College blog for sharing research and personal experiences.
-                <br><br>
-                [ Technical breakdown of the blog and deployment process. ]
-            </p>
+            <p><strong>IIIT-NR Blogs</strong> is a dedicated digital publishing platform designed to foster community
+                engagement within IIIT Naya Raipur. It functions as a centralized hub where students and faculty can
+                share technical insights, campus updates, and creative writing.</p>
+            <p>Unlike static sites, this application is a dynamic, database-driven CMS. It leverages <strong>TiDB
+                    Cloud</strong> (a distributed SQL database) to ensure high availability and scalability of content.
+                The backend logic handles the full lifecycle of a blog post—from creation and rendering to
+                deletion—providing a seamless interface for content management.</p>
+
+            <h3>Key Features</h3>
+            <ul style="margin-left: 20px; list-style-type: disc; color: var(--subtext0);">
+                <li style="margin-bottom: 10px;"><strong>Cloud-Native Persistence:</strong> Connects to TiDB Cloud via
+                    AWS endpoints, utilizing a distributed SQL architecture for robust data storage beyond local SQLite
+                    limitations.</li>
+                <li style="margin-bottom: 10px;"><strong>Full CRUD Functionality:</strong> Implements complete Create,
+                    Read, Update, and Delete operations, allowing authorized users to manage posts directly through the
+                    web interface.</li>
+                <li style="margin-bottom: 10px;"><strong>ORM Integration:</strong> Uses Flask-SQLAlchemy to abstract
+                    database interactions, treating blog posts as Python objects (<code>Blogpost</code> class) rather
+                    than raw SQL queries.</li>
+                <li style="margin-bottom: 10px;"><strong>Dynamic Templating:</strong> Features a responsive frontend
+                    powered by Jinja2, allowing for server-side rendering of variable content like timestamps, authors,
+                    and subtitles.</li>
+                <li style="margin-bottom: 10px;"><strong>Secure Connectivity:</strong> Enforces SSL/TLS verification
+                    (<code>ssl_verify_cert=true</code>) for all database transactions to ensure data integrity during
+                    transit.</li>
+            </ul>
+
+            <h3>Architecture & Tech Stack</h3>
+            <p>The application follows a standard Model-View-Template (MVT) architecture common in Python web
+                development.</p>
+            <ul style="margin-left: 20px; list-style-type: disc; color: var(--subtext0);">
+                <li style="margin-bottom: 10px;"><strong>Backend:</strong> Flask (Python) for routing, request handling,
+                    and session management.</li>
+                <li style="margin-bottom: 10px;"><strong>Database:</strong> TiDB Cloud (MySQL-compatible) hosted on AWS
+                    Southeast Asia nodes.</li>
+                <li style="margin-bottom: 10px;"><strong>Driver:</strong> PyMySQL for compliant database connectivity.
+                </li>
+                <li style="margin-bottom: 10px;"><strong>Frontend:</strong> HTML5/CSS3 injected with Jinja2 template
+                    logic.</li>
+            </ul>
+
+            <h3>Logic & Workflow</h3>
+            <p><strong>Model Definition:</strong> The schema is defined as a Python class (<code>Blogpost</code>),
+                automatically mapping attributes like title and content to database columns.</p>
+
+            <h4>Request Handling:</h4>
+            <ul style="margin-left: 20px; list-style-type: disc; color: var(--subtext0);">
+                <li style="margin-bottom: 10px;"><strong>GET /:</strong> Queries the database, orders posts by
+                    <code>date.desc()</code>, and renders the homepage.
+                </li>
+                <li style="margin-bottom: 10px;"><strong>POST /addpost:</strong> Captures form data, creates a new
+                    <code>Blogpost</code> object, and commits the transaction to TiDB.
+                </li>
+                <li style="margin-bottom: 10px;"><strong>POST /deletepost:</strong> Identifies a record by primary key
+                    (<code>id</code>) and executes a session delete.</li>
+            </ul>
+
+            <h3>Sample Code (Database Configuration)</h3>
+            <div class="code-container">
+                <button class="copy-btn">Copy</button>
+                <pre><code># Database Configuration & Model
+# utilizing TiDB Cloud for distributed storage
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://USER:PASS@gateway01.ap-southeast-1.prod.aws.tidbcloud.com:4000/test?ssl_ca=/etc/ssl/cert.pem&ssl_verify_cert=true'
+
+class Blogpost(db.Model):
+    __tablename__ = 'blog'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    title = db.Column(db.String(50), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
+@app.route('/addpost', methods=['POST'])
+def addpost():
+    # ORM-based insertion
+    post = Blogpost(
+        title=request.form['title'],
+        subtitle=request.form['subtitle'],
+        author=request.form['author'],
+        content=request.form['content']
+    )
+    db.session.add(post)
+    db.session.commit()
+    return redirect(url_for('index'))</code></pre>
+            </div>
         </div>
 
         <div class="footer-bar">

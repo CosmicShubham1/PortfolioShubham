@@ -143,6 +143,65 @@ header nav a:hover {
     font-size: 1.2rem;
 }
 
+/* Project Page Specifics */
+.project-content-body h3 {
+    font-size: 1.8rem;
+    color: var(--green) !important;
+    margin-top: 35px;
+    margin-bottom: 15px;
+    border-bottom: 2px solid var(--green) !important;
+    padding-bottom: 8px;
+}
+
+.project-content-body h4 {
+    font-size: 1.4rem;
+    color: var(--green) !important;
+    margin-top: 25px;
+    margin-bottom: 10px;
+}
+
+
+.code-container {
+    position: relative;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    border: 1px solid var(--surface1);
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--mantle);
+}
+
+.code-container pre {
+    margin: 0;
+    padding: 20px;
+    overflow-x: auto;
+    background: transparent;
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9rem;
+}
+
+.copy-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: var(--surface1);
+    color: var(--text);
+    border: none;
+    padding: 5px 12px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: background 0.2s;
+    opacity: 0.8;
+}
+
+.copy-btn:hover {
+    background: var(--green);
+    color: var(--base);
+    opacity: 1;
+}
+
 /* The "Window" Snippet Look - Mini Version for Project Card */
 .window {
     background: var(--base);

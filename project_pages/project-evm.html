@@ -41,8 +41,8 @@
                     </div>
                     <div class="window-header"><span>evm-face-rec</span><span>Security</span></div>
                     <p style="font-size: 0.9rem; color: var(--subtext0); padding: 20px 0;">
-                        Secure voting system using facial recognition authentication.
-                    </p>
+                        A secure, offline electronic voting system integrating biometric authentication and hardware
+                        controls. </p>
                 </div>
             </div>
         </div>
@@ -74,12 +74,97 @@
         </div>
 
         <div class="project-content-body">
-            <h3>Project Details</h3>
-            <p>
-                Secure voting system using Python, OpenCV, and Arduino for facial recognition based authentication.
-                <br><br>
-                [ Technical breakdown of the face recognition pipeline and hardware integration. ]
-            </p>
+            <p><strong>The EVM using Face Recognition</strong> is a dual-layer security voting system designed to
+                address the vulnerabilities of traditional Electronic Voting Machines (EVMs), such as identity fraud and
+                multiple voting. By bridging hardware control with computer vision, this project ensures that only
+                authenticated individuals can access the voting interface.</p>
+            <p>The system operates as a standalone offline unit, eliminating dependencies on internet connectivity while
+                maintaining a secure local audit trail. It employs a "verify-then-vote" architecture: the Arduino
+                hardware remains locked until the Python-based backend successfully validates the voter's credentials
+                and facial biometrics.</p>
+
+            <h3>Key Features</h3>
+            <ul style="margin-left: 20px; list-style-type: disc; color: var(--subtext0);">
+                <li style="margin-bottom: 10px;"><strong>Biometric Authentication:</strong> Utilizes OpenCV algorithms
+                    (Haar Cascade & LBPH) to perform real-time face detection and matching against a pre-trained
+                    dataset.</li>
+                <li style="margin-bottom: 10px;"><strong>Dual-Factor Verification:</strong> Requires a valid unique
+                    Voter ID followed by a facial match confirmation (confidence threshold 50-70) to unlock the system.
+                </li>
+                <li style="margin-bottom: 10px;"><strong>Duplicate Vote Prevention:</strong> Automatically locks the
+                    Voter ID in the database immediately after a vote is cast, physically preventing repeated voting
+                    attempts.</li>
+                <li style="margin-bottom: 10px;"><strong>Hardware-Software Integration:</strong> Features seamless
+                    serial communication between the Python backend (logic/vision) and Arduino Uno (physical control).
+                </li>
+                <li style="margin-bottom: 10px;"><strong>Secure Data Logging:</strong> Records timestamped vote data
+                    (Voter ID + Candidate Selection) into local immutable text files for transparency and auditing.</li>
+            </ul>
+
+            <h3>Architecture & Workflow</h3>
+            <p>The system follows a strict linear security pipeline to ensure process integrity:</p>
+            <ul style="margin-left: 20px; list-style-type: disc; color: var(--subtext0);">
+                <li style="margin-bottom: 10px;"><strong>Credential Check:</strong> The voter enters their ID via the
+                    laptop interface. The system verifies existence in the local database.</li>
+                <li style="margin-bottom: 10px;"><strong>Facial Scan:</strong> Upon ID validation, the webcam activates.
+                    The Python script captures the face and compares it with stored biometric data.</li>
+                <li style="margin-bottom: 10px;"><strong>Hardware Activation:</strong> If the match is valid, a signal
+                    is sent via Serial (USB) to the Arduino Uno, which "wakes up" the physical voting buttons (connected
+                    to Digital Pins 8, 9, and 10).</li>
+                <li style="margin-bottom: 10px;"><strong>Vote Casting:</strong> The user presses a physical button to
+                    select a candidate. The Arduino captures this input and relays it back to the computer.</li>
+                <li style="margin-bottom: 10px;"><strong>Confirmation:</strong> The vote is logged, and the Arduino
+                    blinks a Red LED (Digital Pin 6) to provide immediate visual confirmation to the user.</li>
+            </ul>
+
+            <h3>Hardware & Tech Stack</h3>
+            <ul style="margin-left: 20px; list-style-type: disc; color: var(--subtext0);">
+                <li style="margin-bottom: 10px;"><strong>Microcontroller:</strong> Arduino Uno (ATmega328P) handles
+                    input/output peripherals and logic states.</li>
+                <li style="margin-bottom: 10px;"><strong>Vision Stack:</strong> Python with OpenCV library for face
+                    detection and recognition.</li>
+                <li style="margin-bottom: 10px;"><strong>Interface:</strong> Physical push buttons for candidate
+                    selection and LED indicators for status feedback.</li>
+                <li style="margin-bottom: 10px;"><strong>Communication:</strong> PySerial library establishes the data
+                    bridge between the laptop (processing unit) and the Arduino.</li>
+            </ul>
+
+            <h3>Real-World Applications</h3>
+            <ul style="margin-left: 20px; list-style-type: disc; color: var(--subtext0);">
+                <li style="margin-bottom: 10px;"><strong>Secure Local Elections:</strong> Ideal for municipal or
+                    panchayat elections requiring low-cost, high-trust solutions.</li>
+                <li style="margin-bottom: 10px;"><strong>Institutional Voting:</strong> Student union or faculty
+                    elections where identity verification is mandatory.</li>
+                <li style="margin-bottom: 10px;"><strong>Corporate Governance:</strong> Internal board member selections
+                    or secure employee surveys.</li>
+            </ul>
+
+            <h3>Sample Logic (Python-Arduino Communication)</h3>
+            <div class="code-container">
+                <button class="copy-btn">Copy</button>
+                <pre><code># Simplified Logic Snippet
+import serial
+import cv2
+
+# Initialize Serial Connection to Arduino
+arduino = serial.Serial('COM3', 9600)
+
+def verify_voter(voter_id, frame):
+    # 1. Check ID in Database
+    if not is_id_valid(voter_id):
+        return "Access Denied: Invalid ID"
+
+    # 2. Check Face Biometrics using OpenCV
+    confidence = face_recognizer.predict(frame)
+    
+    # 3. Unlock Hardware if Authenticated
+    if confidence < 70:  # Lower score = better match in LBPH
+        print("Identity Verified. Unlocking EVM...")
+        arduino.write(b'1') # Send signal to Arduino to enable buttons
+        return wait_for_vote()
+    else:
+        return "Access Denied: Face Mismatch"</code></pre>
+            </div>
         </div>
 
         <div class="footer-bar">

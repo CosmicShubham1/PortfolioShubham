@@ -40,7 +40,7 @@
                     </div>
                     <div class="window-header"><span>cerebellum</span><span>Game</span></div>
                     <p style="font-size: 0.9rem; color: var(--subtext0); padding: 20px 0;">
-                        AI Multiplayer Pictionary-style game with real-time scoring.
+                        A real-time, event-driven multiplayer drawing and guessing game powered by WebSockets.
                     </p>
                 </div>
             </div>
@@ -72,13 +72,104 @@
         </div>
 
         <div class="project-content-body">
-            <h3>Project Details</h3>
-            <p>
-                Built a real-time Pictionary-style game using Flask and WebSockets. Implemented backend logic for
-                scoring and room management.
-                <br><br>
-                [ Implementation details of the socket communication and gameplay logic. ]
+            <p><strong>Cerebellum</strong> is a low-latency, multiplayer browser game that digitizes the classic
+                "Pictionary" experience. Built on an event-driven architecture, it synchronizes game state across
+                multiple clients in real-time, allowing users to draw on a shared canvas while others guess the subject
+                matter to earn points.</p>
+            <p>The system is designed to handle rapid state changes—such as brush strokes and chat messages—without the
+                overhead of traditional HTTP requests. It features a robust server-side game loop that manages room
+                logic, player roles (drawer vs. guesser), and automated scoring based on reaction time.</p>
+
+            <h3>
+                Key Features</h3>
+            <ul style="margin-left: 20px; list-style-type: disc; color: var(--subtext0);">
+                <li style="margin-bottom: 10px;"><strong>Real-Time Canvas Synchronization:</strong> Utilizes
+                    bi-directional WebSocket communication to broadcast drawing coordinates (<code>draw_history</code>)
+                    instantly to all connected clients.</li>
+                <li style="margin-bottom: 10px;"><strong>Dynamic Role Rotation:</strong> Implements a round-robin
+                    algorithm to cycle the "Drawer" role among players while managing game states (Lobby, Playing,
+                    Ended).</li>
+                <li style="margin-bottom: 10px;"><strong>Competitive Scoring Algorithm:</strong> Features a tiered
+                    scoring logic where the first successful guesser is awarded higher points (50 pts) compared to
+                    subsequent correct guessers (30 pts).</li>
+                <li style="margin-bottom: 10px;"><strong>State Management:</strong> Maintains persistent server-side
+                    objects (<code>Player</code> class) to track session IDs, connectivity status, and scores even
+                    during rapid socket reconnections.</li>
+                <li style="margin-bottom: 10px;"><strong>Concurrency:</strong> Leverages Python threading to manage game
+                    timers independently of the main event loop, ensuring non-blocking gameplay.</li>
+            </ul>
+
+            <h3>
+                Architecture & Tech Stack</h3>
+            <p>The application follows a client-server model using the WebSocket protocol for full-duplex communication.
             </p>
+            <ul style="margin-left: 20px; list-style-type: disc; color: var(--subtext0);">
+                <li style="margin-bottom: 10px;"><strong>Backend Framework:</strong> Flask coupled with Flask-SocketIO
+                    to handle namespace events.</li>
+                <li style="margin-bottom: 10px;"><strong>Protocol:</strong> WebSockets (falling back to long-polling if
+                    necessary) for millisecond-level data transfer.</li>
+                <li style="margin-bottom: 10px;"><strong>Concurrency:</strong> Async Mode (Threading) used to handle the
+                    countdown timer (<code>round_timer</code>) without freezing the server.</li>
+                <li style="margin-bottom: 10px;"><strong>Data Structure:</strong> Object-Oriented design using
+                    <code>Player</code> and <code>Country</code> classes to encapsulate user state in memory.
+                </li>
+            </ul>
+
+            <h3>
+                Game Loop Workflow</h3>
+            <p><strong>Lobby Initialization:</strong> Players connect via <code>socketio.on('join')</code>,
+                instantiating a <code>Player</code> object mapped to their session ID (<code>request.sid</code>).</p>
+            <p><strong>Round Start:</strong> The Host triggers the game. The server selects a
+                <code>current_drawer</code>, picks a random word from <code>words.txt</code>, and generates a hint
+                (e.g., _ _ _ _).
+            </p>
+
+            <h4>The Drawing Phase:</h4>
+            <ul style="margin-left: 20px; list-style-type: circle; color: var(--subtext0);">
+                <li>The Drawer receives the target word.</li>
+                <li>As they draw, coordinate data is emitted via the <code>draw</code> event and broadcast to all other
+                    clients to render lines locally.</li>
+            </ul>
+
+            <h4>The Guessing Phase:</h4>
+            <ul style="margin-left: 20px; list-style-type: circle; color: var(--subtext0);">
+                <li>Guessers type words into the chat.</li>
+                <li>The server validates inputs against <code>current_word</code> in real-time.</li>
+                <li>Correct guesses trigger the <code>correct_guess</code> event and update the scoreboard.</li>
+            </ul>
+
+            <p><strong>Round Termination:</strong> Once the timer expires, the server calculates final scores, clears
+                the canvas, and rotates to the next drawer.</p>
+
+            <h3>
+                Sample Code (Scoring Logic)</h3>
+            <div class="code-container">
+                <button class="copy-btn">Copy</button>
+                <pre><code>
+@socketio.on('guess')
+def on_guess(guess):
+    player = find_player(request.sid)
+    
+    # Validation: Drawer cannot guess their own word
+    if not player or player.is_drawer:
+        return
+
+    # Check against current target word
+    guess = guess.strip()
+    correct = (guess.lower() == current_word.lower())
+
+    if correct:
+        # Tiered Scoring: First guesser gets bonus points
+        if not correct_guesses:
+             first_bonus_points(player) 
+        
+        correct_guesses.append({'player_id': request.sid, 'timestamp': time.time()})
+        emit('correct_guess', {'name': player.name}, broadcast=True)
+    else:
+        # Broadcast wrong guess to chat
+        emit('new_guess', {'player': player.name, 'guess': guess}, broadcast=True)
+            </code></pre>
+            </div>
         </div>
 
         <div class="footer-bar">
