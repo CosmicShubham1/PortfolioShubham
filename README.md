@@ -13,7 +13,7 @@ It features a clean, responsive "dark mode" aesthetic with a custom theme toggle
 
 | **Home** | **Projects** |
 |:---:|:---:|
-| <img src="./screenshots/home_preview.png" width="400" alt="Home Page"> | <img src="./screenshots/projects_preview.png" width="400" alt="Projects Page"> |
+| <img src="./project_pages/screenshots/home_preview.png" width="400" alt="Home Page"> | <img src="./project_pages/screenshots/projects_preview.png" width="400" alt="Projects Page"> |
 
 ---
 
